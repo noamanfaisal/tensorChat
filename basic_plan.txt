@@ -1,0 +1,33 @@
+1. On startup:
+   - Show default interface
+   - No model connected yet
+
+2. User types:
+   @connect
+   → Show list of available Models/APIs
+   → Select model → session connected
+
+3. User types:
+   @new
+   → Start fresh chat
+   → (First sentence becomes topic automatically)
+
+4. While chatting:
+   - ^^^file.txt^^^ → file content gets inserted
+   - ^^^https://some.site^^^ → website content gets fetched and inserted
+
+5. Outputs:
+   - Every assistant message is numbered (#1, #2, #3, ...)
+
+6. Commands on outputs:
+   - @write_to 2 → Writes output #2 to file
+   - @run 2 → Executes output #2 as shell command (optional)
+
+7. Saving:
+   - Chats automatically saved in topic folders
+   - ChromaDB indexes all chats for fast search
+
+8. Bonus:
+   - Fully colored User/System messages
+   - Real REPL feeling in terminal
+

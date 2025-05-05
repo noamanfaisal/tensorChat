@@ -1,0 +1,89 @@
+Helix 2025 - Ultimate Shortcut Reference (April 2025)
+======================================================
+
+📂 Basic File Management
+
+| Action | Keybinding | Description |
+|:---|:---|:---|
+| Open File Picker | Space + f | Fuzzy find and open files |
+| Create Scratch Buffer | :new or :n | Open a new temporary file buffer |
+| List Open Buffers | Space + b | List of opened files (buffer picker) |
+| Next Buffer | g n | Switch to next buffer |
+| Previous Buffer | g p | Switch to previous buffer |
+| Close Current Buffer | :buffer-close or :bc | Close the currently open file |
+| Close Others | :buffer-close-others or :bco | Keep only current buffer |
+
+------------------------------------------------------
+
+🔎 Navigation and Code Roaming
+
+| Action | Keybinding | Description |
+|:---|:---|:---|
+| Open Symbol Picker (functions/classes) | Space + s | Fuzzy search symbols and jump |
+| Go to Definition | g d | Jump directly to a symbol definition (needs LSP) |
+| Find References (usages) | g r | List all places a symbol is used |
+| Save Jump Location | Ctrl + s | Save current spot into jump list |
+| Open Jump List | Space + j | Open saved jump locations |
+| Search Project (ripgrep) | Space + / | Search across project (needs rg installed) |
+
+------------------------------------------------------
+
+🖥️ Window and Pane Management
+
+| Action | Keybinding | Description |
+|:---|:---|:---|
+| Split Window Vertically | Space + w then v | Create a vertical split |
+| Split Window Horizontally | :hsplit-new or :hnew | Create horizontal scratch split |
+| Move Between Panes | Alt + Arrow Keys (tmux) | Navigate between tmux splits |
+
+------------------------------------------------------
+
+✏️ Editing and Text Manipulation
+
+| Action | Keybinding | Description |
+|:---|:---|:---|
+| Copy (Yank) Selection | y | Copy to Helix register |
+| Copy to System Clipboard | Space + y | Copy selection to system clipboard |
+| Paste After Cursor | p | Paste from Helix register |
+| Paste Before Cursor | P | Paste from Helix register |
+| Paste System Clipboard | Space + p/P | Paste clipboard content |
+| Manual Command Mode | : | Open Helix command prompt |
+
+------------------------------------------------------
+
+📈 Diagnostics and Information
+
+| Action | Keybinding | Description |
+|:---|:---|:---|
+| Show Diagnostics (LSP Errors/Warnings) | :diagnostics | View errors/warnings |
+| Show Hover (Type/Doc Info) | Space + i | Hover type/info popup |
+| Reload Helix Config | :reload-config | Apply changes without restart |
+
+------------------------------------------------------
+
+🛠️ Important Notes
+
+- ❌ Code Folding: Not implemented as of April 2025.
+- ✅ Symbol Picker, Definitions, References: Fully working via LSP.
+- ✅ Buffers: Easy opening, moving, and closing.
+- ✅ Mouse: Enabled if you set mouse=true in config.toml.
+- ❌ Cannot open same file independently in multiple splits yet (shared buffer).
+
+------------------------------------------------------
+
+🚀 Speed Boosters
+
+| Task | Shortcut |
+|:---|:---|
+| Search file | Space + f |
+| Jump to function/class | Space + s |
+| Jump to definition | g d |
+| Find references | g r |
+| Save spot | Ctrl + s |
+| Go back to saved spot | Space + j |
+
+======================================================
+
+💚 Enjoy fast, clean, mouse-free coding with Helix + tmux + LSP!
+
+*Save this into your project folder for quick reference anytime.*
