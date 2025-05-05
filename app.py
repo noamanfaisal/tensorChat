@@ -14,7 +14,11 @@ class TweetScreen(Screen):
         with Vertical(id="main_vertical"):
             yield ChatView(id="chat_view_widget")
             yield ChatInput()
-
+    
+    async def on_chat_input_submitted(self, message: ChatInput.Submitted) -> None:
+        chat_view = self.query_one("#chat_view_widget", ChatView)
+        await chat_view.send(message.message)
+        
 class LayoutApp(App):
     CSS_PATH = "ui/ui.tcss"
     def on_ready(self) -> None:

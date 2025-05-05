@@ -21,8 +21,8 @@ class ChatView(VerticalScroll):
     async def send(self, message):
         chat_view = self.query_one("#chat-view")
         await chat_view.mount(Prompt(message))
-        response = get_response()
-        await chat_view.mount(Respose(response))
+        response = self.get_response()
+        await chat_view.mount(Response(response))
         
     def get_response(self):
         subjects = ["The cat", "A dog", "My friend", "An alien", "The teacher"]

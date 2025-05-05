@@ -26,6 +26,7 @@ ChatInput Horizontal TextArea{
 	background: red;
 	border: solid orange;
 	padding: 1 1;
+	color: blue;
 }
 Prompt {
     background: $primary 10%;
@@ -33,6 +34,8 @@ Prompt {
     margin: 1;
     margin-right: 8;
     padding: 1 2 0 2;
+	border: hidden white;
+
 }
 Response {
     border: wide blue;
@@ -40,6 +43,7 @@ Response {
     color: green;
     margin: 1;
     margin-left: 8;
+	border: hidden white;
     padding: 1 2 0 2;
 }
 
