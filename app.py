@@ -4,9 +4,10 @@ from textual.screen import Screen
 from textual.widgets import Footer, Header
 from ui.chat_input import ChatInput
 from ui.chat_view import ChatView
-
+from config import settings
 
 class TweetScreen(Screen):
+    
     
     def compose(self) -> ComposeResult:
         yield Header(id="header")
@@ -27,7 +28,7 @@ class LayoutApp(App):
         self.push_screen(TweetScreen())
         
     def on_mount(self) -> None:
-        self.theme = "monokai"
+        self.theme = settings.theme
     
         
 if __name__ == "__main__":
