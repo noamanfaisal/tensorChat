@@ -21,9 +21,15 @@ class TweetScreen(Screen):
         
 class LayoutApp(App):
     CSS_PATH = "ui/ui.tcss"
+    # theme = "dracula"  # <- Set the theme here
     def on_ready(self) -> None:
+        # self.set_theme(self.theme)
         self.push_screen(TweetScreen())
-
+        
+    def on_mount(self) -> None:
+        self.theme = "monokai"
+    
+        
 if __name__ == "__main__":
     app = LayoutApp()
     app.run()

@@ -1,49 +1,49 @@
-Footer{
-	background: green;
+Footer {
+    background: $success;
 }
 Header {
-	background: red;
+    background: $error;
 }
+
 #chat_view_widget {
-	height: 80%;
-	background: yellow;
+    height: 87%;
+    background: $surface;
 }
+
 ChatInput Horizontal {
-	
-	background: blue;
-	height: 20%;
-	border: hidden blue;
-	padding: 1 1;
+    background: $primary;
+    border: hidden $primary;
+    content-align-vertical: middle;    
 }
 
 ChatInput Horizontal Button {
-	background: white;
-	height: 1fr;
-	border: hidden white;
-	padding: 1 1;
+    background: $background;
+    border: hidden $background;
+	content-align-vertical: middle;
+	height: 5;
 }
-ChatInput Horizontal TextArea{
-	background: red;
-	border: solid orange;
-	padding: 1 1;
-	color: blue;
+
+ChatInput Horizontal TextArea {
+	background: $secondary;
+	border: solid $warning;
+	content-align-vertical: middle;
+	height: 5;
 }
+
 Prompt {
     background: $primary 10%;
-    color: red;
+    color: $warning;
     margin: 1;
     margin-right: 8;
     padding: 1 2 0 2;
-	border: hidden white;
-
+    border: hidden $background;
 }
+
 Response {
-    border: wide blue;
-    background: blue 10%;
-    color: green;
+    background: $error 10%;
+    color: $success;
     margin: 1;
     margin-left: 8;
-	border: hidden white;
     padding: 1 2 0 2;
+    border: hidden $background;
 }
-

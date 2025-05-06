@@ -19,6 +19,9 @@ class ChatInput(Widget):
             self.message = message
             super().__init__()
     
+    def on_mount(self):
+        self.query_one("#chatinput_textarea").focus()
+        
     def compose(self) -> ComposeResult:
         """
         this is compose method of control 
