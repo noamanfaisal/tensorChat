@@ -1,7 +1,9 @@
 from textual.app import ComposeResult
 from textual.widgets import Markdown
 import random
-from textual.containers import VerticalScroll
+from texitual.containers import VerticalScroll
+from ..processor import MessageProcessor
+
 class Prompt(Markdown):
     pass
 
@@ -21,11 +23,5 @@ class ChatView(VerticalScroll):
     async def send(self, message):
         chat_view = self.query_one("#chat-view")
         await chat_view.mount(Prompt(message))
-        response = self.get_response()
+        response = await MessageProcessor().process(message)
         await chat_view.mount(Response(response))
-        
-    def get_response(self):
-        subjects = ["The cat", "A dog", "My friend", "An alien", "The teacher"]
-        verbs = ["eats", "plays with", "jumps over", "writes", "dreams of"]
-        objects = ["a ball", "homework", "the moon", "a sandwich", "a secret"]
-        return f"{random.choice(subjects)} {random.choice(verbs)} {random.choice(objects)}."

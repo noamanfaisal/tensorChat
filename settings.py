@@ -8,6 +8,13 @@ class Settings:
         self.config.read(self.path)
 
     @property
+    def topics_path(self):
+        return Path(
+            self.config.get("general", "topics_path", 
+                            fallback=str(Path.home() / ".chatui" / "topics"))
+        ).expanduser()
+
+    @property
     def theme(self):
         return self.config.get("general", "theme", fallback="monokai")
 
@@ -51,4 +58,3 @@ class Settings:
     def is_file_too_large(self, path: str) -> bool:
         size_kb = Path(path).stat().st_size / 1024
         return size_kb > self.max_file_load_size_kb
-
