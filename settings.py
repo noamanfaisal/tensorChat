@@ -2,7 +2,7 @@ import configparser
 from pathlib import Path
 
 class Settings:
-    def __init__(self, path="~/.config/chatui/settings.ini"):
+    def __init__(self, path="settings.ini"):
         self.path = Path(path).expanduser()
         self.config = configparser.ConfigParser()
         self.config.read(self.path)
@@ -10,9 +10,7 @@ class Settings:
     @property
     def topics_path(self):
         return Path(
-            self.config.get("general", "topics_path", 
-                            fallback=str(Path.home() / ".chatui" / "topics"))
-        ).expanduser()
+            self.config.get("general", "topics_path"))
 
     @property
     def theme(self):

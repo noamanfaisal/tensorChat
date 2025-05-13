@@ -1,6 +1,6 @@
-from .models.openai_model import OpenAIModel
-from .models.ollama_model import OllamaModel
-from .settings import Settings
+# from models.openai_model import OpenAIModel
+from models.ollama_model import OllamaModel
+from settings import Settings
 
 class ModelFactory:
     @staticmethod
