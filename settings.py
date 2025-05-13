@@ -2,8 +2,9 @@ import configparser
 from pathlib import Path
 
 class Settings:
+    
     def __init__(self, path="settings.ini"):
-        self.path = Path(path).expanduser()
+        self.path = Path(path)
         self.config = configparser.ConfigParser()
         self.config.read(self.path)
 

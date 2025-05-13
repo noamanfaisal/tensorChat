@@ -1,25 +1,21 @@
 import requests
 from typing import Generator
-from base import BaseModel
+from .base import BaseModel
 from config import settings
 import json
 
 class OllamaModel(BaseModel):
 
-    def __init__(self, model_name: str = "model_gemma3-1b"):
-        import pdb;pdb.set_trace()
-        config = settings.get_model(model_name)
-
-        self.model_name = model_name
-        self.model = config["name"]
-        self.url = config["url"]
-        self.temperature = float(config.get("temperature", 0.5))
-        self.max_tokens = int(config.get("max_tokens", 2048))
-
+    def __init__(self, model_config: dict):
+        self.model_name = model_config["name"]
+        self.url = model_config["url"]
+        self.temperature = float(model_config.get("temperature", 0.5))
+        self.max_tokens = int(model_config.get("max_tokens", 2048))
+        
     def stream(self, messages: list[dict]) -> Generator[str, None, None]:
         prompt = messages[-1]["content"]
         response = requests.post(f"{self.url}/api/generate", json={
-            "model": self.model,
+            "model": self.model_name,
             "prompt": prompt,
             "stream": True,
             "options": {

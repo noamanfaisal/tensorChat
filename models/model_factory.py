@@ -1,18 +1,15 @@
 # from models.openai_model import OpenAIModel
-from models.ollama_model import OllamaModel
-from settings import Settings
+from .ollama_model import OllamaModel
 
 class ModelFactory:
+
     @staticmethod
-    def create(name=None):
-        settings = Settings()
-        model_config = settings.get_model(name)
+    def create(model_config):
         provider = model_config.get("provider")
 
         if provider == "openai":
-            return OpenAIModel(model_config)
+            pass
+            # return OpenAIModel(model_config)
         elif provider == "ollama":
             return OllamaModel(model_config)
-
         raise ValueError(f"Unknown provider: {provider}")
-

@@ -3,15 +3,14 @@ import json
 from pathlib import Path
 import uuid
 from datetime import datetime
-from config import settings
 
 class ChatState:
     
-    def __init__(self):
-        self.base_path = self.settings.topics_path
+    def __init__(self, topics_path: Path):
+        self.base_path = topics_path
         self.base_path.mkdir(parents=True, exist_ok=True)
         self.current_topic = None
-    
+   
     def new_topic(self, model: str, initial_message: str = ""):
         self.save_current_topic()  # save old one
         self.current_topic = {
