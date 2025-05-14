@@ -3,12 +3,26 @@ from chat_state import ChatState
 from models.model_factory import ModelFactory
 from config import settings
 
+class Session:
+    def __init__(self):
+        self.context = None  # stores Ollama context
+        self.topic_id = None
+        self.model_name = None
+
+    def reset(self, topic_id: str, model_name: str):
+        self.context = None
+        self.topic_id = topic_id
+        self.model_name = model_name
+
 class MessageProcessor:
 
     def __init__(self):
         self.settings = settings
         self.parser = CommandParser()
-        self.chat_state = ChatState(settings.topics_path)
+        # provider = model_config.get("provider")
+        self.chat_state = load_chat_state(provider, settings.topics_path)
+        # self.chat_state = ChatState(settings.topics_path)
+        self.session = Session()  # ✅ in-memory only
         # get model name
         model_name = self.settings.get_selected_model_name()
         
