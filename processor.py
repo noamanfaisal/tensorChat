@@ -1,67 +1,73 @@
 from command_parser import CommandParser
-from chat_state import ChatState
+from chat_state.factory import ChatStateFactory
 from models.model_factory import ModelFactory
 from config import settings
-
-class Session:
-    def __init__(self):
-        self.context = None  # stores Ollama context
-        self.topic_id = None
-        self.model_name = None
-
-    def reset(self, topic_id: str, model_name: str):
-        self.context = None
-        self.topic_id = topic_id
-        self.model_name = model_name
+from prompt_processing.factory import PromptProcessorFactory  # ✅ NEW: your prompt processor factory
 
 class MessageProcessor:
 
     def __init__(self):
         self.settings = settings
         self.parser = CommandParser()
-        # provider = model_config.get("provider")
-        self.chat_state = load_chat_state(provider, settings.topics_path)
-        # self.chat_state = ChatState(settings.topics_path)
-        self.session = Session()  # ✅ in-memory only
-        # get model name
+
+        # Get model name and config
         model_name = self.settings.get_selected_model_name()
-        
-        self.chat_state.new_topic(model=model_name)
         model_config = self.settings.get_model(model_name)
         self.model = ModelFactory.create(model_config)
-    
-    async def process(self, message: str) -> str:
+
+        # ✅ Load ChatState using key from settings.ini
+        chat_state_key = self.settings.get_chat_state_name(model_name)
+        self.chat_state = ChatStateFactory.load(chat_state_key, settings.topics_path)
+        self.chat_state.new_topic(model=model_name)
+
+        # ✅ Load PromptProcessor using key from settings.ini
+        prompt_key = self.settings.get_prompt_processor_name(model_name)
+        self.prompt_processor = PromptProcessorFactory.load(prompt_key)
+
+    def process(self, message: str):
         parsed = self.parser.parse(message)
+
         if parsed["type"] == "prompt":
-            return await self._handle_prompt(parsed["raw"])
+            return self._handle_prompt(parsed["raw"])
         elif parsed["type"] == "command":
             return self._handle_command(parsed)
         return "[System]: Unrecognized input."
-    
+
     def _handle_prompt(self, text: str):
+        last_context = self.chat_state.get_context()
+
+        prompt = self.prompt_processor.prepare_prompt(
+            context=last_context,
+            history=self.chat_state.get_messages(),
+            user_input=text
+        )
+
         self.chat_state.add_message("user", text)
 
         full_response = ""
-        for chunk in self.model.stream(self.chat_state.get_messages()):
+        for chunk in self.model.stream(prompt):
             full_response += chunk
-            yield chunk  # ✅ yield as it comes
+            yield chunk
 
         self.chat_state.add_message("assistant", full_response)
-    # async def _handle_prompt(self, text: str) -> str:
-    #     self.chat_state.add_message("user", text)
-    #     # Just pass messages to the interface-compliant model
-    #     full_response = ""
-    #     for chunk in self.model.stream(self.chat_state.get_messages()):
-    #         full_response += chunk
-    #     self.chat_state.add_message("assistant", full_response)
-    #     return full_response
+
+        new_context = self.model.get_context()
+        self.chat_state.set_context(new_context)
 
     def _handle_command(self, parsed: dict) -> str:
         cmd = parsed["command"]
         if cmd == "connect":
             model_name = parsed["args"]
-            self.chat_state.new_topic(model=model_name)
             model_config = self.settings.get_model(model_name)
             self.model = ModelFactory.create(model_config)
+
+            chat_state_key = self.settings.get_chat_state_name(model_name)
+            self.chat_state = ChatStateFactory.load(chat_state_key, self.settings.topics_path)
+            self.chat_state.new_topic(model=model_name)
+
+            prompt_key = self.settings.get_prompt_processor_name(model_name)
+            self.prompt_processor = PromptProcessorFactory.load(prompt_key)
+
             return f"[Connected to {model_name}]"
+
         return f"[Command '{cmd}' processed]"
