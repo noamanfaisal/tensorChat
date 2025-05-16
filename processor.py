@@ -2,7 +2,7 @@ from command_parser import CommandParser
 from chat_state.factory import ChatStateFactory
 from models.model_factory import ModelFactory
 from config import settings
-from prompt_processing.factory import PromptProcessorFactory  # ✅ NEW: your prompt processor factory
+from prompts.factory import PromptProcessorFactory  # ✅ NEW: your prompt processor factory
 
 class MessageProcessor:
 
