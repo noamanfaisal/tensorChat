@@ -87,3 +87,4 @@ Helix 2025 - Ultimate Shortcut Reference (April 2025)
 💚 Enjoy fast, clean, mouse-free coding with Helix + tmux + LSP!
 
 *Save this into your project folder for quick reference anytime.*
+-- PYTHONPATH=$(pwd) python -m IPython
