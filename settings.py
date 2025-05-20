@@ -9,6 +9,10 @@ class Settings:
         self.config.read(self.path)
 
     @property
+    def submit_key(self):
+        return self.config.get("general", "submit_key")
+
+    @property
     def topics_path(self):
         return Path(self.config.get("general", "topics_path"))
 
