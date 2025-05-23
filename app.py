@@ -1,11 +1,14 @@
 from processor import MessageProcessor
 from streamer import StreamdownStreamer
+from chat_completion import SmartCompleter
+from prompt_toolkit import prompt
+
 import time
 processor = MessageProcessor()
-
+completer = SmartCompleter()
 while True:
     try:
-        user_input = input("> ").strip()
+        user_input = prompt("> ",completer=completer, complete_while_typing=True).strip()
         if user_input.lower() in ("exit", "quit"):
             break
 
