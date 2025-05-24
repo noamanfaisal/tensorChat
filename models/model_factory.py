@@ -5,11 +5,12 @@ class ModelFactory:
 
     @staticmethod
     def create(model_config):
-        provider = model_config.get("provider")
+        # 
+        model = model_config.get("model")
 
-        if provider == "openai":
+        if model == "openai":
             pass
             # return OpenAIModel(model_config)
-        elif provider == "ollama":
+        elif model == "ollama":
             return OllamaModel(model_config)
-        raise ValueError(f"Unknown provider: {provider}")
+        raise ValueError(f"Unknown model: {model}")

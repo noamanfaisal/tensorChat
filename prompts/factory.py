@@ -1,29 +1,22 @@
 from .ollama_prompt import OllamaPromptProcessor
-# from prompt_processing.openai_prompt import OpenAIPromptProcessor
-# Add more imports here as needed
-
+# from prompt_processing.openai_prompt import OpenAIPromptProcessor  # Uncomment if needed
 from .base import PromptProcessor
 
 class PromptProcessorFactory:
     @staticmethod
-    def load(name: str) -> PromptProcessor:
+    def create(model_config) -> PromptProcessor:
         """
-        Return the appropriate PromptProcessor subclass based on a string key.
-
-        Args:
-            name: A string identifier from settings.ini (e.g., "ollama", "gemma3_prompt")
-
-        Returns:
-            An instance of a PromptProcessor subclass.
+        Create a PromptProcessor instance based on model_config.
         """
-        # if name == "ollama":
-        #     return OllamaPromptProcessor()
-        # elif name == "openai":
+        prompt_processor_name = model_config.get("prompt_processor")
+
+        if prompt_processor_name == "ollama":
+            return OllamaPromptProcessor()
+        # elif prompt_processor_name == "gemma3_prompt":
+        #     return OllamaPromptProcessor()  # Using shared logic for now
+        # elif prompt_processor_name == "llama3_prompt":
+        #     return OllamaPromptProcessor()  # Also reusing logic
+        # # elif prompt_processor_name == "openai":
         #     return OpenAIPromptProcessor()
-        if name == "gemma3_prompt":
-            return OllamaPromptProcessor()  # Can share logic for now
-        elif name == "llama3_prompt":
-            return OllamaPromptProcessor()  # Also reuse Ollama format
         else:
-            raise ValueError(f"No PromptProcessor implementation for: {name}")
-
+            raise ValueError(f"Unknown PromptProcessor: {prompt_processor_name}")

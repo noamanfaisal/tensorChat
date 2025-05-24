@@ -9,20 +9,18 @@ class MessageProcessor:
     def __init__(self):
         self.settings = settings
         self.parser = CommandParser()
-
         # Get model name and config
         model_name = self.settings.get_selected_model_name()
+        # loading model config
         model_config = self.settings.get_model(model_name)
+        # loading model
         self.model = ModelFactory.create(model_config)
-
         # ✅ Load ChatState using key from settings.ini
-        chat_state_key = self.settings.get_chat_state_name(model_name)
-        self.chat_state = ChatStateFactory.load(chat_state_key, settings.topics_path)
+        self.chat_state = ChatStateFactory.create(model_config)
+        # new topic for chat_state
         self.chat_state.new_topic(model=model_name)
-
         # ✅ Load PromptProcessor using key from settings.ini
-        prompt_key = self.settings.get_prompt_processor_name(model_name)
-        self.prompt_processor = PromptProcessorFactory.load(prompt_key)
+        self.prompt_processor = PromptProcessorFactory.create(model_config)
 
     def process(self, message: str):
         parsed = self.parser.parse(message)
