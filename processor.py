@@ -16,7 +16,7 @@ class MessageProcessor:
         # loading model
         self.model = ModelFactory.create(model_config)
         # ✅ Load ChatState using key from settings.ini
-        self.chat_state = ChatStateFactory.create(model_config)
+        self.chat_state = ChatStateFactory.create(model_config, settings.topics_path)
         # new topic for chat_state
         self.chat_state.new_topic(model=model_name)
         # ✅ Load PromptProcessor using key from settings.ini

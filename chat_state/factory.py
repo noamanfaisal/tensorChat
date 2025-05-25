@@ -7,14 +7,15 @@ from .llama3_ollama import LLaMa3OllamaChatState
 class ChatStateFactory:
 
     @staticmethod
-    def create(model_config, *args, **kwargs) -> BaseChatState:
+    def create(model_config, topic_path, *args, **kwargs) -> BaseChatState:
         """
         Create a ChatState instance based on model_config.
         """
         chat_state_name = model_config.get("chat_state")
 
         if chat_state_name == "ollama":
-            return OllamaChatState(*args, **kwargs)
+            
+            return OllamaChatState(topic_path, *args, **kwargs)
         # elif chat_state_name == "gemma3_state":
         #     return Gemma3OllamaChatState(*args, **kwargs)
         # elif chat_state_name == "llama3_state":
