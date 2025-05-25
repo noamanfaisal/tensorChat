@@ -26,12 +26,14 @@ class MessageProcessor:
         parsed = self.parser.parse(message)
 
         if parsed["type"] == "prompt":
-            return self._handle_prompt(parsed["raw"])
+            return self._handle_prompt(parsed)
         elif parsed["type"] == "command":
             return self._handle_command(parsed)
         return "[System]: Unrecognized input."
 
-    def _handle_prompt(self, text: str):
+    def _handle_prompt(self, prompt: dict):
+        text = prompt['raw']
+        
         last_context = self.chat_state.get_context()
 
         prompt = self.prompt_processor.prepare_prompt(

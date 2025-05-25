@@ -10,15 +10,15 @@ class CommandParser:
 
     def parse(self, text: str) -> Dict[str, Union[str, int, List[str], Dict]]:
         result = {
-            "type": "text",      # default
+            "type": "text",
             "raw": text,
             "command": None,
             "args": None,
             "msg_id": None,
             "tags": [],
-            "filepath": None,    # Contains @load's file if found anywhere
-            "filename": None,    # For @save_file
-            "context_value": None,  # Contains @context's value if found anywhere
+            "filepaths": [],        # Updated: List of @load paths
+            "filename": None,
+            "context_value": None,
         }
 
         stripped = text.strip()
@@ -40,14 +40,13 @@ class CommandParser:
 
                 if cmd_lower in {"load", "save_file", "context"} and cleaned_args:
                     split_args = cleaned_args.split()
-                    result["filepath"] = split_args[0] if split_args else None
+                    result["filepaths"].append(split_args[0])  # Append @load path
 
-        # Now also check for @load and @context anywhere in text (including prompt)
-        if not result["filepath"]:
-            load_match = self.LOAD_PATTERN.search(text)
-            if load_match:
-                result["filepath"] = load_match.group(1)
+        # Extract ALL @load paths from the entire text
+        load_matches = self.LOAD_PATTERN.findall(text)
+        result["filepaths"].extend(load_matches)
 
+        # Extract @context (first occurrence only for now)
         if not result["context_value"]:
             context_match = self.CONTEXT_PATTERN.search(text)
             if context_match:
