@@ -3,7 +3,7 @@ from chat_state.factory import ChatStateFactory
 from models.model_factory import ModelFactory
 from config import settings
 from prompts.factory import PromptProcessorFactory  # ✅ NEW: your prompt processor factory
-
+from prompts.action_processor import PromptActionHandler
 class MessageProcessor:
 
     def __init__(self):
@@ -21,6 +21,7 @@ class MessageProcessor:
         self.chat_state.new_topic(model=model_name)
         # ✅ Load PromptProcessor using key from settings.ini
         self.prompt_processor = PromptProcessorFactory.create(model_config)
+        self.action_processor = PromptActionHandler()
 
     def process(self, message: str):
         parsed = self.parser.parse(message)
@@ -30,27 +31,32 @@ class MessageProcessor:
         elif parsed["type"] == "command":
             return self._handle_command(parsed)
         return "[System]: Unrecognized input."
-
-    def _handle_prompt(self, prompt: dict):
-        text = prompt['raw']
-        
+    
+    def _handle_prompt(self, parsed: dict):
+        breakpoint()
+        text = parsed['raw']  # Already parsed, so use 'raw' text
         last_context = self.chat_state.get_context()
+        # Use parsed data directly from 'prompt'
+        action_result = self.action_processor.process(parsed)
+        # get loaded files if there are any
+        loaded_files = action_result.get("loaded_files", [])
 
-        prompt = self.prompt_processor.prepare_prompt(
+        final_prompt = self.prompt_processor.prepare_prompt(
             context=last_context,
-            history=self.chat_state.get_messages(),
-            user_input=text
+            history=None,
+            user_input=text,
+            system=None,
+            loaded_files=loaded_files
         )
 
         self.chat_state.add_message("user", text)
 
         full_response = ""
-        for chunk in self.model.stream(prompt):
+        for chunk in self.model.stream(final_prompt):
             full_response += chunk
             yield chunk
 
         self.chat_state.add_message("assistant", full_response)
-
         new_context = self.model.get_context()
         self.chat_state.set_context(new_context)
 

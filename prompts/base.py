@@ -20,13 +20,11 @@ class PromptProcessor(ABC):
             raise RuntimeError(f"Failed to load prompt template: {path}") from e
 
     @abstractmethod
-    def prepare_prompt(
-        self,
-        context: Optional[Any],
-        history: List[Dict[str, str]],
-        user_input: str,
-        system: Optional[str] = None,
-    ) -> str:
+    def prepare_prompt(self, context: Optional[list], 
+                   history, 
+                   user_input: str, 
+                   system: Optional[str] = None, 
+                   loaded_files: Optional[List[Dict[str, str]]] = None) -> str:
         """
         Build the full prompt string using context, history, and the current input.
         Should be implemented by each model-specific processor.
