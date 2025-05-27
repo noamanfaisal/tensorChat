@@ -40,7 +40,15 @@ class MessageProcessor:
         action_result = self.action_processor.process(parsed)
         # get loaded files if there are any
         loaded_files = action_result.get("loaded_files", [])
+        #  Get model name and output number
+        model_name = self.chat_state.get_model()
+        output_number = self.chat_state.output
 
+        # Format the header with Markdown and color (e.g., using ANSI or Markdown)
+        header = f"\n```ansi\n[Model: {model_name} | Output #{output_number}\n```\n"
+
+        # Yield the header first
+        yield header
         final_prompt = self.prompt_processor.prepare_prompt(
             context=last_context,
             history=None,
