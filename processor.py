@@ -33,7 +33,7 @@ class MessageProcessor:
         return "[System]: Unrecognized input."
     
     def _handle_prompt(self, parsed: dict):
-        breakpoint()
+        # breakpoint()
         text = parsed['raw']  # Already parsed, so use 'raw' text
         last_context = self.chat_state.get_context()
         # Use parsed data directly from 'prompt'
