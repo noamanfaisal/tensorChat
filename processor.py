@@ -5,6 +5,10 @@ from config import settings
 from prompts.factory import PromptProcessorFactory  # ✅ NEW: your prompt processor factory
 from prompts.action_processor import PromptActionHandler
 import  os
+import json
+from datetime import datetime
+from session_manager import SessionManager
+
 class MessageProcessor:
 
     def __init__(self):
@@ -24,6 +28,7 @@ class MessageProcessor:
         # ✅ Load PromptProcessor using key from settings.ini
         self.prompt_processor = PromptProcessorFactory.create(model_config)
         self.action_processor = PromptActionHandler()
+        self.session = SessionManager()
 
     def process(self, message: str):
         parsed = self.parser.parse(message)
@@ -81,6 +86,47 @@ class MessageProcessor:
 
     def _handle_command(self, parsed: dict) -> str:
         cmd = parsed["command"]
+        if cmd == "list_topics":
+            # breakpoint()
+            # get topics path
+            topics_path = settings.topics_path
+            # topics file
+            topic_files = [f for f in os.listdir(topics_path) if f.endswith(".json")]
+            topics = []
+
+            for file in topic_files:
+                file_path = os.path.join(topics_path, file)
+                try:
+                    with open(file_path, 'r') as f:
+                        data = json.load(f)
+                        topic_id = os.path.splitext(file)[0]
+                        topic_name = data.get("name", "Unnamed Topic")
+                        date_str = topic_id.split('_')[0]
+                        date_obj = datetime.strptime(date_str, "%Y%m%d")
+                        topics.append((topic_id, topic_name, date_obj))
+                except Exception as e:
+                    print(f"[Warning] Failed to read '{file_path}': {e}")
+
+            # Sort topics by date
+            topics.sort(key=lambda x: x[2])
+
+            # Build topic_map: number -> topic_id
+            topic_map = {idx: tid for idx, (tid, _, _) in enumerate(topics, start=1)}
+            self.session.set('topic_map', topic_map, table='topics')
+
+            # Build Markdown output
+            if not topics:
+                yield "### 📚 No topics found."
+                return
+
+            markdown_list = "### 📚 Available Topics\n\n"
+            for idx, (tid, tname, tdate) in enumerate(topics, start=1):
+                date_fmt = tdate.strftime('%Y-%m-%d')
+                markdown_list += f"{idx}. **{tname}** (ID: `{tid}`, Date: {date_fmt})\n"
+
+            yield markdown_list
+            return
+
         if cmd == "new_topic":
             model_name = self.settings.get_selected_model_name()
             self._initialize_model(model_name)
