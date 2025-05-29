@@ -5,6 +5,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Optional
 from .base import BaseChatState
+# import spacyi
+# from keybert import KeyBERT
+# from sentence_transformers import SentenceTransformer
+
 
 class OllamaChatState(BaseChatState):
 
@@ -25,12 +29,14 @@ class OllamaChatState(BaseChatState):
     
     def new_topic(self, model: str, initial_message: str = "") -> None:
         self._reset_context()
+        topic_name = 'Untitled Topic'        
         self.current_topic = {
             "id": self._generate_topic_id(),
             "model": model,
             "created_at": datetime.utcnow().isoformat(),
             "messages": [],
             "output_number": 1,
+            "name": topic_name,
         }
         if initial_message:
             self.add_message("user", initial_message)
@@ -43,10 +49,13 @@ class OllamaChatState(BaseChatState):
             "created_at": datetime.utcnow().isoformat(),
             "messages": [],
             "output_number": 1,
+            "name": "Untitled Topic",
         }
 
     def add_message(self, role: str, content: str) -> None:
         if self.current_topic:
+            if role == "user" and self.current_topic.get("name", "Untitled Topic") == "Untitled Topic":
+                self.current_topic["name"] = self._generate_topic_name(content)
             if role == "assistant":
                 self.output_number = self.current_topic.get("output_number", 1)
                 self.current_topic["output_number"] = self.output_number + 1
@@ -95,3 +104,23 @@ class OllamaChatState(BaseChatState):
         if self.context_last_updated is None:
             return True
         return (time.time() - self.context_last_updated) > self.context_ttl_seconds
+    
+    def _generate_topic_name(self, text: str) -> str:
+        if not text.strip():
+            return "Untitled Topic"
+        first_line = text.strip().split('\n')[0]
+        return " ".join(first_line.strip().split()[:10])
+   # def _generate_topic_name(self, text: str) -> str:
+    #     keywords = self.kw_model.extract_keywords(text, 
+    #                 keyphrase_ngram_range=(1, 2), stop_words='english', top_n=1)
+    #     return keywords[0][0] if keywords else "Untitled Topic"
+    # #     doc = self.nlp(text)
+    # #     breakpoint()
+    # #     # Extract meaningful noun chunks
+    # #     noun_chunks = [chunk.text.strip() for chunk in doc.noun_chunks if len(chunk.text.strip()) > 2]
+    # #     if noun_chunks:
+    # #         return noun_chunks[0].capitalize()
+    # #     # Fallback: first 5 words of the answer
+    # #     return " ".join(text.strip().split()[:5]).capitalize()
+    #     embedding_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+    #     self.kw_model = KeyBERT(model=embedding_model)
