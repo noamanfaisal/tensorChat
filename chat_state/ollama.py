@@ -16,6 +16,7 @@ class OllamaChatState(BaseChatState):
         self.context_last_updated: Optional[float] = None
         self.context_ttl_seconds: int = 1800  # 30 minutes
         self.output_number = 0
+    
     @property
     def output(self):
         if self.current_topic:

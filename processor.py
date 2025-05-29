@@ -13,6 +13,7 @@ class MessageProcessor:
         model_name = self.settings.get_selected_model_name()
         # loading model config
         model_config = self.settings.get_model(model_name)
+        # breakpoint()
         # loading model
         self.model = ModelFactory.create(model_config)
         # ✅ Load ChatState using key from settings.ini
@@ -67,21 +68,26 @@ class MessageProcessor:
         self.chat_state.add_message("assistant", full_response)
         new_context = self.model.get_context()
         self.chat_state.set_context(new_context)
+    
+    def _initialize_model(self, model_name):
+        self.settings.set_selected_model(model_name)
+        model_config = self.settings.get_model(model_name)
+        self.model = ModelFactory.create(model_config)
+        self.chat_state = ChatStateFactory.create(model_config, settings.topics_path)
+        self.chat_state.new_topic(model=model_name)
+        self.prompt_processor = PromptProcessorFactory.create(model_config)
+        self.action_processor = PromptActionHandler()
 
     def _handle_command(self, parsed: dict) -> str:
         cmd = parsed["command"]
+        if cmd == "new_topic":
+            model_name = self.settings.get_selected_model_name()
+            self._initialize_model(model_name)
+            return "[CLEAR_SCREEN]"
+
         if cmd == "connect":
             model_name = parsed["args"]
-            model_config = self.settings.get_model(model_name)
-            self.model = ModelFactory.create(model_config)
-
-            chat_state_key = self.settings.get_chat_state_name(model_name)
-            self.chat_state = ChatStateFactory.load(chat_state_key, self.settings.topics_path)
-            self.chat_state.new_topic(model=model_name)
-
-            prompt_key = self.settings.get_prompt_processor_name(model_name)
-            self.prompt_processor = PromptProcessorFactory.load(prompt_key)
-
-            return f"[Connected to {model_name}]"
+            self._initialize_model(model_name)
+            return f"[Connected to {model_name} and new topic initialized]"
 
         return f"[Command '{cmd}' processed]"
