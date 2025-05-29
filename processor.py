@@ -4,6 +4,7 @@ from models.model_factory import ModelFactory
 from config import settings
 from prompts.factory import PromptProcessorFactory  # ✅ NEW: your prompt processor factory
 from prompts.action_processor import PromptActionHandler
+import  os
 class MessageProcessor:
 
     def __init__(self):
@@ -83,11 +84,13 @@ class MessageProcessor:
         if cmd == "new_topic":
             model_name = self.settings.get_selected_model_name()
             self._initialize_model(model_name)
-            return "[CLEAR_SCREEN]"
+            os.system('cls' if os.name == 'nt' else 'clear')
+            yield f"[Connected to {model_name} and new topic initialized]"
 
         if cmd == "connect":
             model_name = parsed["args"]
             self._initialize_model(model_name)
-            return f"[Connected to {model_name} and new topic initialized]"
-
+            os.system('cls' if os.name == 'nt' else 'clear')
+            yield f"[Connected to {model_name} and new topic initialized]"
+ 
         return f"[Command '{cmd}' processed]"

@@ -15,11 +15,6 @@ while True:
             break
 
         chunks = processor.process(user_input)  # Must be a generator or string
-        if chunks == "[CLEAR_SCREEN]":
-            os.system('cls' if os.name == 'nt' else 'clear')
-            welcome_message = "## Welcome to **tensorChat** 🚀\n"
-            chunks = (line for line in [welcome_message])  # ✅ Replace chunks with generator
-
         streamer = StreamdownStreamer()
 
         for chunk in chunks:

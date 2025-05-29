@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 from prompt_toolkit.document import Document
 from prompt_toolkit.completion import PathCompleter
+from config import settings
 # Set up logging
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
@@ -13,7 +14,8 @@ class SmartCompleter(Completer):
     def __init__(self):
         self.commands_in_start  = ["@connect", "@new_topic"]
         self.commands_anywhere = ["@load"]
-        self.models = ["llama3", "gpt-4o", "mistral", "deepseek"]
+        self.models = [model["name"] for model in settings.get_all_models()]  # ✅ Extract model names
+        # self.models = ["llama3", "gpt-4o", "mistral", "deepseek"]
         self.path_completer = PathCompleter(expanduser=True)
     
     def list_files_and_folders(self, path: str) -> list[str]:
