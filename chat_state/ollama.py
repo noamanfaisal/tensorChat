@@ -110,17 +110,8 @@ class OllamaChatState(BaseChatState):
             return "Untitled Topic"
         first_line = text.strip().split('\n')[0]
         return " ".join(first_line.strip().split()[:10])
-   # def _generate_topic_name(self, text: str) -> str:
-    #     keywords = self.kw_model.extract_keywords(text, 
-    #                 keyphrase_ngram_range=(1, 2), stop_words='english', top_n=1)
-    #     return keywords[0][0] if keywords else "Untitled Topic"
-    # #     doc = self.nlp(text)
-    # #     breakpoint()
-    # #     # Extract meaningful noun chunks
-    # #     noun_chunks = [chunk.text.strip() for chunk in doc.noun_chunks if len(chunk.text.strip()) > 2]
-    # #     if noun_chunks:
-    # #         return noun_chunks[0].capitalize()
-    # #     # Fallback: first 5 words of the answer
-    # #     return " ".join(text.strip().split()[:5]).capitalize()
-    #     embedding_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
-    #     self.kw_model = KeyBERT(model=embedding_model)
+    
+    def load_topic(self, filename: str):
+        with open(filename, "r") as f:
+            self.current_topic = json.load(f)
+        self._reset_context()  # Optional: reset context if desired

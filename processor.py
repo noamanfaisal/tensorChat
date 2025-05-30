@@ -86,6 +86,44 @@ class MessageProcessor:
 
     def _handle_command(self, parsed: dict) -> str:
         cmd = parsed["command"]
+
+        if cmd == "load_topic":
+            try:
+                breakpoint()
+                topic_number_str = parsed.get("args")
+                if not topic_number_str:
+                    yield "[Error: Please provide a topic number.]"
+                    return
+
+                topic_number = int(topic_number_str)
+                topic_map = self.session.get('topic_map', {}, table='topics')
+                topic_id = topic_map.get(topic_number)
+                if not topic_id:
+                    yield f"[Error: Topic #{topic_number} not found. Use @list_topics first.]"
+                    return
+
+                topic_file = os.path.join(settings.topics_path, f"{topic_id}.json")
+                if not os.path.isfile(topic_file):
+                    yield f"[Error: Topic file '{topic_file}' not found.]"
+                    return
+
+                # ✅ Load full topic into chat_state
+                self.chat_state.load_topic(topic_file)
+                self.session.set('last_loaded_topic', topic_id, table='topics')
+                messages = self.chat_state.get_messages()
+                yield f"[✅ Loaded topic #{topic_number} ({topic_id}) with {len(messages)} messages]"
+                # 🔥 Print each message
+                breakpoint()
+                for idx, msg in enumerate(messages, start=1):
+                    role = msg.get('role', 'unknown')
+                    content = msg.get('content', '')
+                    output_num = msg.get('output_number', idx)
+                    yield f"{idx}. ({role} #{output_num}): {content}"
+
+            except ValueError:
+                yield "[Error: Invalid topic number.]"
+            return
+        
         if cmd == "list_topics":
             # breakpoint()
             # get topics path

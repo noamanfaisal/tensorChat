@@ -32,7 +32,7 @@ class CommandParser:
             result["args"] = args.strip() if args else ""
 
             if cmd_lower in {"new_topic", "connect", "load", "save_file", 
-                                                "save_data", "encrypt", "context", "list_topics"}:
+                                                "save_data", "encrypt", "context", "list_topics", "load_topic"}:
                 result["msg_id"] = self._extract_msg_id(args)
                 result["tags"] = self._extract_tags(args)
 
