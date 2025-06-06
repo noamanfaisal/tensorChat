@@ -6,16 +6,22 @@ from typing import List, Dict
 from pydantic import Field
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langchain_core.messages import trim_messages
+from datetime import datetime
+import uuid
 
 class ConversationThread(ConversationBufferMemory):
+
     session_id: str = Field(default=None)
     db: TinyDB = Field(default=None)
     topics_table: TinyDB.table_class = Field(default=None)  # or just `Any
 
-    def __init__(self, session_id, db_path='chat_memory.json', **kwargs):
+    def __init__(self, session_id=None, db_path='chat_memory.json', **kwargs):
         
         super().__init__(**kwargs)
-        self.session_id = session_id
+        if session_id == None:
+            self.session_id = self._generate_new_topic_id()
+        else:
+            self.session_id = session_id
         self.db = TinyDB(db_path)
         self.topics_table = self.db.table("topics")
 
@@ -48,26 +54,26 @@ class ConversationThread(ConversationBufferMemory):
 
         return trimmer.invoke(full_history)
     
-    def new_topic(self, model: str) -> None:
-        self._reset_context()  # Flush the conversation memory
-        topic_name = 'Untitled Topic'
+    def start_new_topic(self, model: str = "unknown") -> str:
+        """
+        Flush current memory and start a new topic. Returns the new topic ID.
+        """
+        self.clear()
+        topic_id = self._generate_new_topic_id()
         self.current_topic = {
-            "id": self._generate_topic_id(),
+            "id": topic_id,
             "model": model,
             "created_at": datetime.utcnow().isoformat(),
             "messages": [],
             "output_number": 1,
-            "name": topic_name,
+            "name": "Untitled Topic",
         }
+        self.session_id = topic_id  # Keep this consistent
+        return topic_id
+
     def get_messages(self) -> List[Dict[str, str]]:
         return self.chat_memory.messages if hasattr(self.chat_memory, 
                                                     "messages") else []
-
-    # def get_messages(self) -> List[Dict[str, str]]:
-    #     """
-    #     Return the conversation history stored in ConversationBufferMemory.
-    #     """
-    #     return self.buffer if self.buffer else []
 
     def load_topic(self, filename: str):
         """
@@ -100,6 +106,9 @@ class ConversationThread(ConversationBufferMemory):
             raise ValueError(f"Unsupported role: {role}")
     
         self.chat_memory.add_message(message)
+    
+    def _generate_new_topic_id(self):
+        return datetime.utcnow().strftime("%Y%m%d_%H%M%S") + "_" + str(uuid.uuid4())[:6]
 
     # import json
 # import uuid

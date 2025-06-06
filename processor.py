@@ -6,7 +6,6 @@ from models.model_factory import ModelFactory
 import prompt_template
 import os
 import json
-from datetime import datetime
 import uuid
 from typing import AsyncGenerator
 
@@ -22,9 +21,8 @@ class MessageProcessor:
         # initiate model
         self.model = ModelFactory.create(self.model_config)
         # Initialize persistent memory
-        topic_id = self.session.get('current_topic_id') or self._generate_new_topic_id()
-        self.session.set('current_topic_id', topic_id)
-        self.memory = ConversationThread(session_id=topic_id)
+        # self.session.set('current_topic_id', topic_id)
+        self.memory = ConversationThread()
         # Load dynamic prompt processor
         self.prompt_processor = prompt_template.Factory.create()
 
@@ -83,11 +81,10 @@ class MessageProcessor:
         if cmd == "list_topics":
             topics = self.memory.list_all_topics()
             yield topics
-
+        
         if cmd == "new_topic":
-            new_topic_id = self._generate_new_topic_id()
-            self.memory = PersistentConversationMemory(session_id=new_topic_id)
-            self.session.set('current_topic_id', new_topic_id)
+            new_topic_id = \
+                self.memory.start_new_topic(model=self.model.__class__.__name__)
             yield f"[New topic {new_topic_id} initialized]"
 
         if cmd == "connect":
