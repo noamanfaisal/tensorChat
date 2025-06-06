@@ -5,7 +5,7 @@ import json
 from typing import List, Dict
 from pydantic import Field
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-
+from langchain_core.messages import trim_messages
 
 class ConversationThread(ConversationBufferMemory):
     session_id: str = Field(default=None)
@@ -30,7 +30,24 @@ class ConversationThread(ConversationBufferMemory):
             "output": json.dumps(outputs)
         }
         self.topics_table.insert(data)
+        
+    def get_trimmed_messages(self, model, max_tokens=2048, buffer_tokens=200, strategy="last") -> List[dict]:
+        """
+        Return the chat memory trimmed to fit within max_tokens - buffer_tokens.
+        """
+        full_history = self.get_messages()
 
+        trimmer = trim_messages(
+            max_tokens=max_tokens - buffer_tokens,
+            strategy=strategy,
+            token_counter=model,  # Must have a get_num_tokens method
+            include_system=True,
+            allow_partial=False,
+            start_on="human"
+        )
+
+        return trimmer.invoke(full_history)
+    
     def new_topic(self, model: str) -> None:
         self._reset_context()  # Flush the conversation memory
         topic_name = 'Untitled Topic'
