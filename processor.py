@@ -65,7 +65,6 @@ class MessageProcessor:
 
         # Store the user message
         self.memory.add_message("user", text)
-        breakpoint()
         # Stream model output
         full_response = ""
         for chunk in self.model.stream(final_messages):
