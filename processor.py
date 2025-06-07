@@ -53,14 +53,13 @@ class MessageProcessor:
             max_tokens=int(self.model_config.get("max_tokens", 4096)),
             buffer_tokens=512
         )
-
+        
         # Format final prompt with trimmed history + user input
         template = prompt_template.Factory.create("default")
         final_messages = template.format_messages(
             history=trimmed_history,
             input=resolved_input
         )
-
         # Store the user message
         self.memory.add_message("user", text)
         # Stream model output
@@ -79,8 +78,22 @@ class MessageProcessor:
         cmd = parsed["command"]
 
         if cmd == "list_topics":
+            # topics = self.memory.list_all_topics()
+            # yield topics
             topics = self.memory.list_all_topics()
-            yield topics
+
+            if not topics:
+                yield "### No topics found."
+                return
+
+            yield "### 📚 Available Topics\n"
+            for i, t in enumerate(topics, 1):
+                    name = t.get("name", "Untitled")
+                    model = t.get("model", "unknown")
+                    created = t.get("created_at", "")
+                    topic_id = t.get("id", "")
+
+                    yield f"{i}. **{name}** — `{model}` @ `{created}`    - ID: `{topic_id}`\n"
         
         if cmd == "new_topic":
             new_topic_id = \

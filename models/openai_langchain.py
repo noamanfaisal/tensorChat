@@ -1,4 +1,4 @@
-from langchain.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
 
 class OpenAILangChainModel(ChatOpenAI):
     def __init__(self, model_config: dict):

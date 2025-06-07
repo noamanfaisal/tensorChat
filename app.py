@@ -11,8 +11,10 @@ completer = SmartCompleter()
 while True:
     try:
         user_input = prompt("> ", completer=completer, complete_while_typing=True).strip()
-        if user_input.lower() in ("exit", "quit"):
+        if user_input.lower() in ("exit", "quit", "exit()", "Exit", "Exit()", "quit()"):
             break
+        if user_input == "" or user_input == None:
+            continue
 
         chunks = processor.process(user_input)  # Must be a generator or string
         streamer = StreamdownStreamer()
