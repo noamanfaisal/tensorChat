@@ -4,10 +4,9 @@ from session_manager import SessionManager
 from conversation_thread import ConversationThread
 from models.model_factory import ModelFactory
 import prompt_template
-import os
-import json
 import uuid
 from typing import AsyncGenerator
+from copy import deepcopy
 
 class MessageProcessor:
     def __init__(self):
@@ -16,13 +15,13 @@ class MessageProcessor:
         self.session = SessionManager()
 
         # Get model configuration and create model via factory
-        model_name = self.settings.get_selected_model_name()
-        self.model_config = self.settings.get_model(model_name)
+        model_config_name = self.settings.get_selected_model_name()
+        self.model_config = self.settings.get_model(model_config_name)
         # initiate model
         self.model = ModelFactory.create(self.model_config)
         # Initialize persistent memory
         # self.session.set('current_topic_id', topic_id)
-        self.memory = ConversationThread()
+        self.memory = ConversationThread(deepcopy(dict(self.model_config)))
         # Load dynamic prompt processor
         self.prompt_processor = prompt_template.Factory.create()
 
@@ -97,7 +96,7 @@ class MessageProcessor:
         
         if cmd == "new_topic":
             new_topic_id = \
-                self.memory.start_new_topic(model=self.model.__class__.__name__)
+                self.memory.start_new_topic(model=self.model_config["model"])
             yield f"[New topic {new_topic_id} initialized]"
 
         if cmd == "connect":

@@ -9,36 +9,42 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langchain_core.messages import trim_messages
 from datetime import datetime
 import uuid
+from config import settings
 
 class ConversationThread(ConversationBufferMemory):
 
     session_id: str = Field(default=None)
     db: TinyDB = Field(default=None)
     topics_table: TinyDB.table_class = Field(default=None)  # or just `Any
+    messages_table: TinyDB.table_class = Field(default=None)
     current_topic: dict = Field(default_factory=dict)
+    model_info: dict = Field(default_factory=dict)
     # TOPIC_TABLE_NAME = "topics"
     
-    def __init__(self, session_id=None, db_path='chat_memory.json', **kwargs):
+    def __init__(self, model_info, session_id=None, db_path='chat_memory.json', **kwargs):
         
         super().__init__(**kwargs)
-        if session_id == None:
-            self.session_id = self._generate_new_topic_id()
-        else:
-            self.session_id = session_id
         self.db = TinyDB(db_path)
-        self.topics_table = self.db.table("topics")
-
+        self.topics_table = self.db.table("topics")        # for topic metadata only
+        self.messages_table = self.db.table("messages")
+        self.model_info = model_info
+        # Always start a new topic unless restoring a specific one
+        if session_id:
+            self.session_id = session_id
+        else:
+            self.session_id = None  # Will be initialized on first user message
+    
     def save_context(self, inputs, outputs):
         # First, let LangChain handle the memory
         super().save_context(inputs, outputs)
         # Prepare and persist this interaction to TinyDB
-        data = {
+        self.messages_table.insert({
             "session_id": self.session_id,
             "timestamp": datetime.utcnow().isoformat(),
-            "input": json.dumps(inputs),   # JSON serialization ensures compatibility
+            "input": json.dumps(inputs),
             "output": json.dumps(outputs)
-        }
-        self.topics_table.insert(data)
+        })
+        # self.topics_table.insert(data)
         
     def get_trimmed_messages(self, model, max_tokens=2048, buffer_tokens=200, strategy="last") -> List[dict]:
         """
@@ -98,7 +104,10 @@ class ConversationThread(ConversationBufferMemory):
 
     def add_message(self, role: str, content: str):
         if role == "user":
-            breakpoint()
+            if self.session_id is None:
+                self.session_id = self.\
+                start_new_topic(model=self.model_info.get("model", 
+                                                          "unknown"))
             message = HumanMessage(content=content)
             # If current topic is still 'Untitled Topic', update name
             if self.topics_table.contains(where('id') == self.session_id):
