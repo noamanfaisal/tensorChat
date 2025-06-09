@@ -106,7 +106,8 @@ class MessageProcessor:
                 model_config_name = self.settings.get_selected_model_name()
                 self.model_config = self.settings.get_model(model_config_name)
                 self.model = ModelFactory.create(self.model_config)
-                yield f"✅ **Connected to `{model_name}`**"
+                yield f"\n```ansi\n\u001b✔ Connected to {model_name}\u001b```\n"
+                # yield f"✅ **Connected to `{model_name}`**"
                 # yield f"[Connected to {model_name}]"
             else:
                 yield f"{model_name} model name must be in model list that {self.settings.get_all_model_names()}"
