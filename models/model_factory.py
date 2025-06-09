@@ -5,12 +5,12 @@ from models.openai_langchain import OpenAILangChainModel
 class ModelFactory:
     @staticmethod
     def create(model_config):
-        model_type = model_config.get("model")
-
-        if model_type == "openai":
+        load_model_class = model_config.get("load_model_class")
+ 
+        if load_model_class == "openai":
             return OpenAILangChainModel(model_config)
 
-        elif model_type == "ollama":
+        elif load_model_class == "ollama":
             return OllamaLangChainModel(model_config)
 
         else:

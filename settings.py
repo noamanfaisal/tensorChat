@@ -69,6 +69,9 @@ class Settings:
     def get_prompt_processor_name(self, model_name=None) -> str:
         return self.get_model(model_name).get("prompt_processor", "default")
 
+    def get_all_model_names(self) -> list[str]:
+        return [section[len("model_"):] for section in self.config.sections() if section.startswith("model_")]
+
 # import configparser
 # from pathlib import Path
 

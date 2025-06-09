@@ -18,7 +18,7 @@ while True:
 
         chunks = processor.process(user_input)  # Must be a generator or string
         streamer = StreamdownStreamer()
-
+        breakpoint()
         for chunk in chunks:
             streamer.write_chunk(chunk)
             # time.sleep(0.05)  # simulate streaming
