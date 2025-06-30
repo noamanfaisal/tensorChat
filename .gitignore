@@ -174,3 +174,4 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 session.json
+personal_github_id_ed25519
