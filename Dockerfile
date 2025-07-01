@@ -45,7 +45,7 @@ chmod 600 /home/ubuntu/.ssh/config
 
 RUN git clone git@personal_github:noamanfaisal/tensorChat.git /home/ubuntu/tensorchat
 WORKDIR /home/ubuntu/tensorchat
-RUN git fetch --all && git checkout origin/dev
+RUN git fetch --all && git checkout origin/staging
 
 # Create Python virtual environment
 RUN python3 -m venv /home/ubuntu/envs/tensorchat
