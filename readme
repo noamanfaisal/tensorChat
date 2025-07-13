@@ -1,0 +1,90 @@
+tensorChat
+
+A powerful, flexible, and model-agnostic chat interface powered by Langchain. tensorChat enables seamless interaction with local and cloud-based LLMs, allowing users to inject context from files, websites, commands, and past chats—all managed through a unified context window architecture.
+
+⸻
+
+🚀 Features
+
+🔌 Model Support & Prompt Handling
+	•	Langchain-Powered Backend – Unified interface for all models (local or cloud).
+	•	Multi-Model Support – Compatible with Ollama, Code LLaMA, Mistral, OpenAI, Claude, Anthropic, and more.
+	•	Prompt Templates – Customizable prompts per model using PromptProcessorFactory.
+	•	Streaming Tokens – Real-time streaming for supported models.
+
+💬 Context & Chat Management
+	•	Topic-Based Chats – Persistent chat threads with unique message IDs.
+	•	Unified Context Window – Langchain handles all memory across models.
+	•	Dynamic Context Injection:
+	•	@add_context file.md – Load file content.
+	•	@add_context topic:45 – Reuse past chat threads.
+	•	@grab https://example.com – Use webpage content.
+	•	@grab_output "df -h" – Use shell command output.
+	•	@load path/to/file.txt – Inject file directly into prompt.
+
+📋 Message Actions & Commands
+	•	@copy 224 – Copy entire output of a message.
+	•	@copycode 225 – Copy code blocks only.
+	•	@run 226 – Execute message output as shell command.
+	•	Save any command output to file or context (@grab_output "uptime" > sys.txt).
+
+🧠 AI Utilities
+	•	@summary – Summarize the current thread.
+	•	@summarize topic:xyz – Summarize any past topic.
+	•	Merge multiple context types into a single input.
+
+☁️ Cloud Settings Sync
+	•	Backup/load your config and sessions to/from:
+	•	Dropbox
+	•	Amazon S3
+	•	Google Drive
+	•	Auto-sync and cross-device setup supported.
+
+⚙️ Extensibility & Configuration
+	•	Settings File – ~/.config/chatui/settings.ini
+	•	Factory Architecture – Easily extend core components (PromptProcessor, ChatState, etc).
+	•	Plugin-Ready – Add custom commands, formatters, and model wrappers.
+
+⸻
+
+📦 Installation
+
+Coming soon.
+
+⸻
+
+🛠 Usage Examples
+
+@add_context notes.md
+@grab https://example.com
+@summary
+@copy 105
+@run 110
+
+
+⸻
+
+📁 Configuration
+
+Edit ~/.config/chatui/settings.ini:
+
+[model_ollama]
+model_name = llama3
+max_tokens = 2048
+stream = true
+
+[general]
+max_file_load_size_kb = 100
+
+
+⸻
+
+📣 License
+
+MIT
+
+⸻
+
+📬 Contact
+
+Built with ❤️ by the tensorChat team. Contributions welcome!
