@@ -1,0 +1,41 @@
+# 🔌 Model Integration & Prompt System
+# gh issue create --title "Integrate Langchain as backend for context management" --body "Use Langchain's memory system to manage chat state for all models."
+gh issue create --title "Add support for local models (Ollama, Code LLaMA, Mistral)" --body "Enable tensorChat to use Ollama or other local LLMs."
+gh issue create --title "Add support for remote API models (OpenAI, Claude, Anthropic)" --body "Integrate with remote models through Langchain wrappers."
+gh issue create --title "Implement streaming token support for supported models" --body "Enable real-time response streaming where models allow it."
+gh issue create --title "Build PromptProcessorFactory to load model prompt templates" --body "Use settings.ini to define prompt formatters for each model."
+
+# 💬 Chat & Context Management
+gh issue create --title "Implement topic-based chat sessions with message indexing" --body "Allow users to start named chat threads with numbered responses."
+gh issue create --title "Support @add_context <file> to load file into context" --body "Inject file contents as context into current chat session."
+gh issue create --title "Support @add_context topic:<id> to reuse past chats" --body "Allow reusing context from a previous topic or session."
+gh issue create --title "Support @grab <url> to fetch website and use as context" --body "Pull raw content from a webpage and inject as prompt context."
+gh issue create --title "Support @grab_output \"command\" to inject shell output into context" --body "Run a shell command and use its output in the prompt."
+gh issue create --title "Support @load file.txt to directly inject file into prompt" --body "Load and include file content inline with the prompt."
+gh issue create --title "Enable dynamic addition/removal of context items at runtime" --body "Users can add or remove context elements without restarting the session."
+gh issue create --title "Support merging multiple context types into single window" --body "Combine chat history, files, URLs, and shell output together."
+
+# 📋 Message Utilities
+gh issue create --title "Implement @copy <message_id> to copy full response" --body "Allow user to copy entire output from a previous message."
+gh issue create --title "Implement @copycode <message_id> to copy only code blocks" --body "Copy just the code portions from any chat response."
+gh issue create --title "Implement @run <message_id> to execute output as command" --body "Run the output of a message directly in the shell."
+gh issue create --title "Support saving @grab_output to file" --body "Allow redirecting output to file using '> filename.txt' syntax."
+
+# 🧠 AI Utilities
+gh issue create --title "Implement @summary to summarize current topic" --body "Summarize the active chat thread using LLM."
+gh issue create --title "Implement @summarize topic:<id> to summarize any past topic" --body "Generate a summary from previous topic sessions."
+gh issue create --title "Optimize Langchain context windows for multi-source prompts" --body "Ensure memory stays within bounds when merging context."
+gh issue create --title "Support TTL-based expiration of context" --body "Auto-clear context after N minutes for session freshness."
+
+# ☁️ Cloud Sync
+gh issue create --title "Support saving settings and sessions to Dropbox" --body "Allow backing up settings.ini and chats to Dropbox."
+gh issue create --title "Support saving settings and sessions to Amazon S3" --body "Enable S3 integration for cloud config and state."
+gh issue create --title "Support saving settings and sessions to Google Drive" --body "Support storing/restoring user state via Google Drive."
+gh issue create --title "Add automatic cloud sync feature (optional)" --body "Periodically backup and restore data to/from configured cloud."
+gh issue create --title "Enable cross-device session recovery via cloud" --body "Pull existing config and chats when starting on a new machine."
+
+# ⚙️ Configuration & Extensibility
+gh issue create --title "Use INI-based configuration at ~/.config/chatui/settings.ini" --body "All model settings, limits, and defaults should live in a centralized config."
+gh issue create --title "Support per-model overrides using [model_xxx] sections" --body "Allow custom config per model in the INI file."
+gh issue create --title "Refactor ChatState, PromptProcessor, and CommandParser to be pluggable" --body "Design each core component as a factory-loaded plugin."
+gh issue create --title "Implement plugin system for commands and formatters" --body "Support adding new @commands or output processors via plugins."
