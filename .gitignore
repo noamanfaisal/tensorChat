@@ -175,3 +175,4 @@ cython_debug/
 .pypirc
 session.json
 personal_github_id_ed25519
+chat_memory.json
