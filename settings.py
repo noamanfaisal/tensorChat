@@ -7,6 +7,8 @@ class Settings:
         self.path = Path(path)
         self.config = configparser.ConfigParser()
         self.config.read(self.path)
+        self.data_path = '~/'
+
 
     @property
     def submit_key(self):

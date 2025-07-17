@@ -2,9 +2,11 @@ from command_parser import CommandParser
 from config import settings
 from session_manager import SessionManager
 from conversation_thread import ConversationThread
+from file_utils import inject_files_into_text
 from models.model_factory import ModelFactory
 import prompt_template
 import uuid
+
 from typing import AsyncGenerator
 from copy import deepcopy
 
