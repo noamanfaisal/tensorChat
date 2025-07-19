@@ -113,6 +113,9 @@ class MessageProcessor:
                 # yield f"[Connected to {model_name}]"
             else:
                 yield f"{model_name} model name must be in model list that {self.settings.get_all_model_names()}"
+
+        if cmd == 'load_topic':
+            self.memory.load_topic()
                 
 
     def _generate_new_topic_id(self):

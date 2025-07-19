@@ -131,5 +131,5 @@ class ConversationThread(ConversationBufferMemory):
         return sorted(
             self.db.table("topics").all(),
             key=lambda x: x.get("created_at", ""),
-            reverse=True
+            reverse=False
         )

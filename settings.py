@@ -1,5 +1,6 @@
 import configparser
 from pathlib import Path
+import os
 
 class Settings:
     
@@ -39,6 +40,7 @@ class Settings:
         section = f"model_{name}"
         if not self.config.has_section(section):
             raise ValueError(f"Model '{name}' not found.")
+        self.resolve_url_and_api_key(section)
         return dict(self.config.items(section))
 
     def get_all_models(self):
@@ -59,6 +61,25 @@ class Settings:
         self.config.set("general", "selected_model", name)
         with self.path.open("w") as f:
             self.config.write(f)
+    
+    def resolve_url_and_api_key(self, section: str):
+
+        has_url      = self.config.has_option(section, "url")
+        has_api_key = self.config.has_option(section, "api_key")
+
+        if not (has_url or has_api_key):
+            raise ValueError(f"Model must define at least one of 'url' or 'api_key' in section [{section}].")
+
+        if has_url and has_api_key:
+            raise ValueError(f"Model must define only one of 'url' or 'api_key' in section [{section}].")
+
+        if has_api_key:
+            key = self.config[section]["api_key"]
+            if key is None or key == "":
+                raise ValueError(f"Model cannot have an empty 'api_key' field in section [{section}].")
+            self.config[section]["api_key"] = os.getenv(key[1:]) if key.startswith("$") else key
+            
+            
 
     def is_file_too_large(self, path: str) -> bool:
         size_kb = Path(path).stat().st_size / 1024
