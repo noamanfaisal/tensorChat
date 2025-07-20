@@ -115,8 +115,9 @@ class MessageProcessor:
                 yield f"{model_name} model name must be in model list that {self.settings.get_all_model_names()}"
 
         if cmd == 'load_topic':
-            self.memory.load_topic()
-                
+            session_id = parsed["args"]
+            self.memory.load_topic(session_id)
+            yield f"Topic {session_id} has been initialized"
 
     def _generate_new_topic_id(self):
         return datetime.utcnow().strftime("%Y%m%d_%H%M%S") + "_" + str(uuid.uuid4())[:6]

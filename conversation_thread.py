@@ -82,25 +82,63 @@ class ConversationThread(ConversationBufferMemory):
         return self.chat_memory.messages if hasattr(self.chat_memory, 
                                                     "messages") else []
 
-    def load_topic(self, filename: str):
-        """
-        Load a topic from a file and populate the ConversationBufferMemory buffer.
-        """
-        with open(filename, "r") as f:
-            loaded_data = json.load(f)
+    # def load_topic(self, session_id: str):
+    #     # Fetch topic metadata
+    #     topic = self.topics_table.get(where('id') == session_id)
+    #     if not topic:
+    #         raise ValueError(f"No topic found with id: {session_id}")
 
-        # Reset context before loading
-        self._reset_context()
+    #     # Clear current memory buffer
+    #     self.clear()
+    #     self.session_id = session_id
+    #     self.current_topic = topic
 
-        # Populate buffer with loaded messages
-        messages = loaded_data.get("messages", [])
-        for msg in messages:
-            role = msg.get("role", "user")
-            content = msg.get("content", "")
+    #     # Retrieve all messages for this session, sorted by timestamp
+    #     records = self.messages_table.search(where('session_id') == session_id)
+    #     records.sort(key=lambda r: r.get('timestamp', ''))
+
+    #     # Replay each message into the buffer
+    #     for rec in records:
+    #         data = {
+    #             'role': rec.get('input') and 'user' or 'assistant',
+    #             'content': rec.get('input') or rec.get('output')
+    #         }
+    #         # Use add_message to ensure consistent handling
+    #         self.add_message(data['role'], json.loads(data['content']))
+
+    def load_topic(self, session_id: str):
+        # Fetch topic metadata
+        topic = self.topics_table.get(where('id') == session_id)
+        if not topic:
+            raise ValueError(f"No topic found with id: {session_id}")
+
+        # Clear current memory buffer
+        self.clear()
+        self.session_id = session_id
+        self.current_topic = topic
+
+        # Retrieve all messages for this session, sorted by timestamp
+        records = self.messages_table.search(where('session_id') == session_id)
+        records.sort(key=lambda r: r.get('timestamp', ''))
+
+        # Replay each message into the buffer
+        for rec in records:
+            if rec.get('input'):
+                # rec['input'] is a JSON string of a dict like {"input": "..."}
+                parsed = json.loads(rec['input'])
+                content = parsed.get('input') or parsed.get('content')  # adjust key as needed
+                role = 'user'
+            else:
+                # rec['output'] is a JSON string of a dict like {"output": "..."}
+                parsed = json.loads(rec['output'])
+                content = parsed.get('output') or parsed.get('content')
+                role = 'assistant'
+
+            # Ensure it's a plain string
+            if not isinstance(content, str):
+                content = str(content)
+
             self.add_message(role, content)
-
-        # Optionally set current_topic to reflect loaded topic metadata
-        self.current_topic = loaded_data
 
     def add_message(self, role: str, content: str):
         if role == "user":
@@ -133,3 +171,4 @@ class ConversationThread(ConversationBufferMemory):
             key=lambda x: x.get("created_at", ""),
             reverse=False
         )
+
