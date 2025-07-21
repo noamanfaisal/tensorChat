@@ -59,8 +59,8 @@ class Settings:
         if not self.config.has_section(section):
             raise ValueError(f"Model '{name}' does not exist.")
         self.config.set("general", "selected_model", name)
-        with self.path.open("w") as f:
-            self.config.write(f)
+        # with self.path.open("w") as f:
+        #     self.config.write(f)
     
     def resolve_url_and_api_key(self, section: str):
 
@@ -78,7 +78,6 @@ class Settings:
             if key is None or key == "":
                 raise ValueError(f"Model cannot have an empty 'api_key' field in section [{section}].")
             self.config[section]["api_key"] = os.getenv(key[1:]) if key.startswith("$") else key
-            
             
 
     def is_file_too_large(self, path: str) -> bool:

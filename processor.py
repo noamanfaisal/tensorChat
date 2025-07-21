@@ -4,6 +4,7 @@ from session_manager import SessionManager
 from conversation_thread import ConversationThread
 from file_utils import inject_files_into_text
 from models.model_factory import ModelFactory
+from remarks.messages import templates
 import prompt_template
 import uuid
 
@@ -34,7 +35,7 @@ class MessageProcessor:
             return self._handle_prompt(parsed)
         elif parsed["type"] == "command":
             return self._handle_command(parsed)
-        return "[System]: Unrecognized input."
+        return templates["unrecognized"]()
     
 
     def _handle_prompt(self, parsed: dict) -> AsyncGenerator[str, None]:
@@ -79,8 +80,6 @@ class MessageProcessor:
         cmd = parsed["command"]
 
         if cmd == "list_topics":
-            # topics = self.memory.list_all_topics()
-            # yield topics
             topics = self.memory.list_all_topics()
 
             if not topics:
@@ -93,12 +92,12 @@ class MessageProcessor:
                     created = t.get("created_at", "")
                     topic_id = t.get("id", "")
 
-                    yield f"{i}. **{name}** — `{model}` @ `{created}`    - ID: `{topic_id}`\n"
+                    yield templates["list_topics"](i, name, model, created, topic_id)
         
         if cmd == "new_topic":
             new_topic_id = \
                 self.memory.start_new_topic(model=self.model_config["model"])
-            yield f"[New topic {new_topic_id} initialized]"
+            yield template["new_topic_id"](new_topic_id)
 
         if cmd == "connect":
             model_name = parsed["args"]
@@ -108,16 +107,15 @@ class MessageProcessor:
                 model_config_name = self.settings.get_selected_model_name()
                 self.model_config = self.settings.get_model(model_config_name)
                 self.model = ModelFactory.create(self.model_config)
-                yield f"\n```ansi\n\u001b✔ Connected to {model_name}\u001b```\n"
-                # yield f"✅ **Connected to `{model_name}`**"
-                # yield f"[Connected to {model_name}]"
+                yield templates["connected"](model_name)
             else:
-                yield f"{model_name} model name must be in model list that {self.settings.get_all_model_names()}"
+                
+                yield templates["not_connected"](model_name, self.settings.get_all_model_names())
 
         if cmd == 'load_topic':
             session_id = parsed["args"]
             self.memory.load_topic(session_id)
-            yield f"Topic {session_id} has been initialized"
+            yield templates["load_topic"](session_id)
 
     def _generate_new_topic_id(self):
         return datetime.utcnow().strftime("%Y%m%d_%H%M%S") + "_" + str(uuid.uuid4())[:6]
