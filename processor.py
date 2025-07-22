@@ -97,7 +97,7 @@ class MessageProcessor:
         if cmd == "new_topic":
             new_topic_id = \
                 self.memory.start_new_topic(model=self.model_config["model"])
-            yield template["new_topic_id"](new_topic_id)
+            yield templates["new_topic"](new_topic_id)
 
         if cmd == "connect":
             model_name = parsed["args"]
