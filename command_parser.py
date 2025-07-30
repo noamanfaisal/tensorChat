@@ -7,6 +7,7 @@ class CommandParser:
     TAG_PATTERN = re.compile(r'#(\w+)\b')
     LOAD_PATTERN = re.compile(r'@load\s+([^\s#]+)')
     CONTEXT_PATTERN = re.compile(r'@context\s+([^\s#]+)')
+    GRAB_PATTERN = re.compile((r'@grab\s+([^\s#]+)'))
 
     def parse(self, text: str) -> Dict[str, Union[str, int, List[str], Dict]]:
         result = {
@@ -19,6 +20,7 @@ class CommandParser:
             "filepaths": [],        # Updated: List of @load paths
             "filename": None,
             "context_value": None,
+            "urls": []
         }
 
         stripped = text.strip()
@@ -32,7 +34,7 @@ class CommandParser:
             result["args"] = args.strip() if args else ""
 
             if cmd_lower in {"new_topic", "connect", "load", "save_file", 
-                                                "save_data", "encrypt", "context", "list_topics", "load_topic"}:
+                                                "save_data", "encrypt", "context", "list_topics", "load_topic", "grab"}:
                 result["msg_id"] = self._extract_msg_id(args)
                 result["tags"] = self._extract_tags(args)
 
@@ -43,9 +45,19 @@ class CommandParser:
                     split_args = cleaned_args.split()
                     result["filepaths"].append(split_args[0])  # Append @load path
 
+                elif cmd_lower == "grab" and cleaned_args:
+                    # Capture the URL argument for @grab
+                    split_args = cleaned_args.split()
+                    print(split_args[0])
+                    result["urls"].append(split_args[0])
+
+
         # Extract ALL @load paths from the entire text
         load_matches = self.LOAD_PATTERN.findall(text)
         result["filepaths"].extend(load_matches)
+
+        grab_matches = self.GRAB_PATTERN.findall(text)
+        result["urls"].extend(grab_matches)
 
         # Extract @context (first occurrence only for now)
         if not result["context_value"]:

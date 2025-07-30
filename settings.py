@@ -64,7 +64,7 @@ class Settings:
     
     def resolve_url_and_api_key(self, section: str):
 
-        has_url      = self.config.has_option(section, "url")
+        has_url     = self.config.has_option(section, "url")
         has_api_key = self.config.has_option(section, "api_key")
 
         if not (has_url or has_api_key):

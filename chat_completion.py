@@ -15,7 +15,7 @@ from conversation_thread import ConversationThread
 class SmartCompleter(Completer):
     def __init__(self):
         self.commands_in_start  = ["@connect", "@new_topic", "@list_topics", "@load_topic"]
-        self.commands_anywhere = ["@load"]
+        self.commands_anywhere = ["@load", "@grab"]
         self.models = [model["name"] for model in settings.get_all_models()]  # ✅ Extract model names
         # self.models = ["llama3", "gpt-4o", "mistral", "deepseek"]
         self.path_completer = PathCompleter(expanduser=True)

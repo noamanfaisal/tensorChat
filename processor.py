@@ -2,11 +2,13 @@ from command_parser import CommandParser
 from config import settings
 from session_manager import SessionManager
 from conversation_thread import ConversationThread
-from file_utils import inject_files_into_text
+from file_utils import inject_files_into_text, check_filepaths, inject_website_into_text
 from models.model_factory import ModelFactory
 from remarks.messages import templates
 import prompt_template
+import trafilatura as tft
 import uuid
+import os
 
 from typing import AsyncGenerator
 from copy import deepcopy
@@ -41,14 +43,36 @@ class MessageProcessor:
     def _handle_prompt(self, parsed: dict) -> AsyncGenerator[str, None]:
         text = parsed['raw']
         filepaths = parsed.get("filepaths", [])
+        urls = parsed.get("urls", [])
         output_number = len(self.memory.get_messages()) // 2 + 1
         model_name = self.model_config["model"]
-    
-        yield f"\n```ansi\n[Model: {model_name} | Output #{output_number}]\n```\n"
 
         # Inject file contents into user input
-        resolved_input = inject_files_into_text(text, filepaths, base_path=settings.data_path) if filepaths else text
+        if filepaths:
+            nonexistant = check_filepaths(filepaths)
+            if nonexistant:
+                yield templates["files_not_found"](nonexistant)
+                return None
+            else:
+                resolved_input = inject_files_into_text(text, filepaths, base_path=settings.data_path)
+        else:
+            resolved_input = text
+        
+        if urls:
+            url = urls[0] 
+            downloaded = tft.fetch_url(url)
+            if downloaded is None:
+                yield templates["url_failed"](url)
+                return None
+            else:
+                text = tft.extract(downloaded)
+                if text is None:
+                    yield templates["url_failed"](url)
+                    return None
+                else:
+                    resolved_input = inject_website_into_text(resolved_input, text)
 
+        
         # Get trimmed context from memory
         trimmed_history = self.memory.get_trimmed_messages(
             model=self.model,
@@ -116,6 +140,17 @@ class MessageProcessor:
             session_id = parsed["args"]
             self.memory.load_topic(session_id)
             yield templates["load_topic"](session_id)
+
+        if cmd == 'grab':
+            url = parsed['args']
+            downloaded = tft.fetch_url(url)
+            if downloaded is None:
+                yield templates["url_failed"](url)
+            else:
+                text = tft.extract(downloaded)
+                if text is None:
+                    yield templates["url_failed"](url)
+
 
     def _generate_new_topic_id(self):
         return datetime.utcnow().strftime("%Y%m%d_%H%M%S") + "_" + str(uuid.uuid4())[:6]

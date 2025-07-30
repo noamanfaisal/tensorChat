@@ -19,3 +19,17 @@ def inject_files_into_text(text: str, filepaths: list[str], base_path: str = "."
 
     return "\n".join(parts)
 
+def check_filepaths(filepaths: list[str]) -> list[str]:
+
+    validities = [os.path.exists(filepath) for filepath in filepaths]
+    if sum(validities) == len(validities):
+        return []
+    else:
+        return [item[1] for item in zip(validities, filepaths) if not(item[0])]
+
+def inject_website_into_text(text: str, website_text: str) -> str:
+    return f'{text}\n{website_text}'
+
+
+
+
